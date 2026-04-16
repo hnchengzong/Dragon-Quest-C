@@ -1,12 +1,16 @@
 # Dragon-Quest-C
 
+![C](https://img.shields.io/badge/Language-C-blue.svg)
+![xmake](https://img.shields.io/badge/Build-xmake-orange.svg)
+![License](https://img.shields.io/badge/License-MIT-green.svg)
+
 该项目源自早期个人练习作品，现在对其进行模块化重构，稍稍修改，并使用`xmake`构建。使用了AI工具进行代码审查，并对一些潜在问题进行修复。
 
 ## 🚀编译与运行
 
 ```bash
 
-git clone https://github.com/hnchengzong/Dragon-Quest-C.git
+git clone --depth 1 https://github.com/hnchengzong/Dragon-Quest-C.git
 
 cd ./Dragon-Quest-C
 
