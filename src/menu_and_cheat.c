@@ -12,22 +12,38 @@ static void remove_inventory_item(GameData *game, int index) {
   game->inventory_count--;
 }
 
+static void exit_game(GameData *game) {
+  printf("感谢游玩！再见！\n");
+  exit(0);
+}
+
+static void easter_egg(GameData *game) {
+  printf("哼哼哼啊啊啊啊啊啊！！！！！！\n");
+}
 void main_menu(GameData *game) {
+  static const MenuItem menu_items[] = {{1, "查看状态", show_status},
+                                        {2, "移动", move},
+                                        {3, "寻找敌人", battle},
+                                        {4, "与NPC交谈", talk_to_npc},
+                                        {5, "查看背包", show_inventory},
+                                        {6, "使用物品", use_item},
+                                        {7, "休息", rest},
+                                        {8, "学习技能", learn_skills},
+                                        {9, "保存游戏", save_game},
+                                        {0, "退出游戏", exit_game},
+                                        {666, "作弊模式", cheat_game},
+                                        {114514, "彩蛋", easter_egg}};
+  const int menu_count = sizeof(menu_items) / sizeof(menu_items[0]);
   int choice;
 
   while (1) {
     printf("\n========== 主菜单 ==========\n");
     printf("当前地点：%s\n", game->locations[game->current_location].name);
-    printf("1. 查看状态\n");
-    printf("2. 移动\n");
-    printf("3. 寻找敌人\n");
-    printf("4. 与NPC交谈\n");
-    printf("5. 查看背包\n");
-    printf("6. 使用物品\n");
-    printf("7. 休息\n");
-    printf("8. 学习技能\n");
-    printf("9. 保存游戏\n");
-    printf("0. 退出游戏\n");
+
+    for (int i = 0; i < menu_count - 2; i++) {
+      printf("%d. %s\n", menu_items[i].choice, menu_items[i].description);
+    }
+
     printf("请选择: ");
 
     if (scanf("%d", &choice) != 1) {
@@ -37,44 +53,16 @@ void main_menu(GameData *game) {
       continue;
     }
 
-    switch (choice) {
-    case 1:
-      show_status(game);
-      break;
-    case 2:
-      move(game);
-      break;
-    case 3:
-      battle(game);
-      break;
-    case 4:
-      talk_to_npc(game);
-      break;
-    case 5:
-      show_inventory(game);
-      break;
-    case 6:
-      use_item(game);
-      break;
-    case 7:
-      rest(game);
-      break;
-    case 8:
-      learn_skills(game);
-      break;
-    case 9:
-      save_game(game);
-      break;
-    case 0:
-      printf("感谢游玩！再见！\n");
-      exit(0);
-    case 666:
-      cheat_game(game);
-      break;
-    case 114514:
-      printf("哼哼哼啊啊啊啊啊啊！！！！！！\n");
-      break;
-    default:
+    int found = 0;
+    for (int i = 0; i < menu_count; i++) {
+      if (menu_items[i].choice == choice) {
+        menu_items[i].action(game);
+        found = 1;
+        break;
+      }
+    }
+
+    if (!found) {
       printf("无效选择，请重新输入。\n");
     }
   }
@@ -313,9 +301,9 @@ void talk_to_npc(GameData *game) {
                game->npcs[npc_index].name);
         break;
       case 5: // 国王
-        printf(
-            "\n%s: \"伟大的英雄！您拯救了整个王国！人民将永远铭记你的功绩。\"",
-            game->npcs[npc_index].name);
+        printf("\n%s: "
+               "\"伟大的英雄！您拯救了整个王国！人民将永远铭记你的功绩。\"",
+               game->npcs[npc_index].name);
         printf("\n%s: \"王国的和平与繁荣都归功于你！\"",
                game->npcs[npc_index].name);
         printf("\n%s: \"你的事迹将被各地传颂。\"", game->npcs[npc_index].name);

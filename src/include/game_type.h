@@ -17,14 +17,14 @@ typedef struct {
   long exp;
   long level;
   long money;
-  long base_attack;      // 基础攻击力
-  long base_defense;     // 基础防御力
-  long attack;           // 总攻击力（包含装备加成）
-  long defense;          // 总防御力（包含装备加成）
-  long agility;          // 敏捷，影响闪避和先攻
-  long intelligence;     // 智力，影响魔法攻击和魔法值
-  int equipped_weapon;   // 当前装备的武器索引（-1表示无）
-  int equipped_armor;    // 当前装备的防具索引（-1表示无）
+  long base_attack;    // 基础攻击力
+  long base_defense;   // 基础防御力
+  long attack;         // 总攻击力（包含装备加成）
+  long defense;        // 总防御力（包含装备加成）
+  long agility;        // 敏捷，影响闪避和先攻
+  long intelligence;   // 智力，影响魔法攻击和魔法值
+  int equipped_weapon; // 当前装备的武器索引（-1表示无）
+  int equipped_armor;  // 防具索引（-1表示无）
 } Player;
 
 typedef struct {
@@ -100,3 +100,11 @@ typedef struct {
   int learned_skills[MAX_SKILLS]; // 已学习技能
   int learned_skill_count;
 } GameData;
+
+typedef void (*MenuAction)(GameData *game);
+
+typedef struct {
+  int choice;
+  const char *description;
+  MenuAction action;
+} MenuItem;
