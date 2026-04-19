@@ -34,30 +34,25 @@ void main_menu(GameData *game) {
     printf("\n========== 主菜单 ==========\n");
     printf("当前地点：%s\n", game->locations[game->current_location].name);
 
-    for (int i = 0; i < menu_count - 2; i++) {
+    for (int i = 0; i < menu_count - 2; i++)
       printf("%d. %s\n", menu_items[i].choice, menu_items[i].description);
-    }
 
     printf("请选择: ");
 
     if (scanf("%d", &choice) != 1) {
       printf("输入无效，请输入数字。\n");
-      while (getchar() != '\n') {
-      };
+      while (getchar() != '\n')
+        ;
       continue;
     }
 
-    int found = 0;
     for (int i = 0; i < menu_count; i++) {
       if (menu_items[i].choice == choice) {
         menu_items[i].action(game);
-        found = 1;
         break;
       }
-    }
-
-    if (!found) {
-      printf("无效选择，请重新输入。\n");
+      if (i == menu_count - 1)
+        printf("无效选择，请重新输入。\n");
     }
   }
 }
@@ -77,33 +72,21 @@ void show_status(GameData *game) {
   printf("智力: %ld\n", game->player.intelligence);
   printf("金币: %ld\n", game->player.money);
 
-  if (game->player.equipped_weapon >= 0) {
-    printf("当前武器: 已装备 (+%d攻击)\n", game->player.equipped_weapon);
-  } else {
-    printf("当前武器: 无\n");
-  }
-
-  if (game->player.equipped_armor >= 0) {
-    printf("当前防具: 已装备 (+%d防御)\n", game->player.equipped_armor);
-  } else {
-    printf("当前防具: 无\n");
-  }
-
+  printf("当前武器: %s\n", game->player.equipped_weapon >= 0 ? "已装备" : "无");
+  printf("当前防具: %s\n", game->player.equipped_armor >= 0 ? "已装备" : "无");
   printf("=============================\n");
 }
 
 void move(GameData *game) {
-  int i, choice;
-
   printf("\n========== 可去地点 ==========\n");
-  for (i = 0; i < MAX_LOCATIONS; i++) {
-    if (game->locations[i].name[0] != '\0' && i != game->current_location) {
+  for (int i = 0; i < MAX_LOCATIONS; i++) {
+    if (game->locations[i].name[0] != '\0' && i != game->current_location)
       printf("%d. %s - %s\n", i + 1, game->locations[i].name,
              game->locations[i].description);
-    }
   }
-  printf("请选择目的地 (输入对应数字): ");
 
+  printf("请选择目的地 (输入对应数字): ");
+  int choice;
   if (scanf("%d", &choice) != 1) {
     while (getchar() != '\n')
       ;
@@ -113,32 +96,36 @@ void move(GameData *game) {
 
   choice--;
 
-  if (choice >= 0 && choice < MAX_LOCATIONS &&
-      choice != game->current_location &&
-      game->locations[choice].name[0] != '\0') {
-    game->current_location = choice;
-    printf("你来到了%s。\n", game->locations[game->current_location].name);
-  } else if (choice == 666) {
+  if (choice == 666) {
     cheat_game(game);
-  } else {
-    printf("无效的选择。\n");
+    return;
   }
+
+  if (choice < 0 || choice >= MAX_LOCATIONS ||
+      choice == game->current_location ||
+      game->locations[choice].name[0] == '\0') {
+    printf("无效的选择。\n");
+    return;
+  }
+
+  game->current_location = choice;
+  printf("你来到了%s。\n", game->locations[game->current_location].name);
 }
 
 void rest(GameData *game) {
-  int location_type = game->locations[game->current_location].type;
+  int type = game->locations[game->current_location].type;
 
-  // 0=城镇, 4=王城, 5=沙漠绿洲
-  if (location_type == 0 || location_type == 4 || location_type == 5) {
-    int restore_hp = game->player.max_hp - game->player.hp;
-    int restore_mp = game->player.max_mp - game->player.mp;
-
-    game->player.hp = game->player.max_hp;
-    game->player.mp = game->player.max_mp;
-
-    printf("你在这里好好休息了一番...\n");
-    printf("恢复了%d点生命值和%d点魔法值！\n", restore_hp, restore_mp);
-  } else {
+  if (type != 0 && type != 4 && type != 5) {
     printf("只有在城镇、王城或绿洲等地才能休息！\n");
+    return;
   }
+
+  int restore_hp = game->player.max_hp - game->player.hp;
+  int restore_mp = game->player.max_mp - game->player.mp;
+
+  game->player.hp = game->player.max_hp;
+  game->player.mp = game->player.max_mp;
+
+  printf("你在这里好好休息了一番...\n");
+  printf("恢复了%d点生命值和%d点魔法值！\n", restore_hp, restore_mp);
 }

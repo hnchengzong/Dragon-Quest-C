@@ -17,37 +17,28 @@ void level_up(GameData *game) {
     game->player.intelligence += 2;
 
     printf("恭喜升级到 %ld 级！\n", game->player.level);
-    printf("生命值 +%d，魔法值 +%d  ", 20, 10);
-    printf("攻击力 +%d，防御力 +%d  ", 5, 2);
-    printf("敏捷 +%d，智力 +%d\n", 3, 2);
+    printf("生命值 +20，魔法值 +10  ");
+    printf("攻击力 +5，防御力 +2  ");
+    printf("敏捷 +3，智力 +2\n");
   }
 }
 
-int calculate_damage(int attacker_attack, int defender_defense) {
-  int base_damage = attacker_attack - (defender_defense / 2);
-  if (base_damage < 1)
-    base_damage = 1;
+int calculate_damage(int attack, int defense) {
+  int base = attack - (defense / 2);
+  if (base < 1)
+    base = 1;
 
-  int variance = base_damage / 4;
+  int variance = base / 4;
   if (variance < 1)
     variance = 1;
 
-  int final_damage = base_damage + (rand() % (variance * 2)) - variance;
-  if (final_damage < 1)
-    final_damage = 1;
-
-  return final_damage;
+  int damage = base + (rand() % (variance * 2)) - variance;
+  return damage < 1 ? 1 : damage;
 }
 
 int estimate_enemy_level(Enemy *enemy) {
-
-  // 基于敌人的综合属性估算等级，综合考虑HP和攻击
-  int power_score = (enemy->hp + enemy->attack * 10) / 50;
-  int estimated_level = power_score;
-  if (estimated_level < 1)
-    estimated_level = 1;
-
-  return estimated_level;
+  int level = (enemy->hp + enemy->attack * 10) / 50;
+  return level < 1 ? 1 : level;
 }
 
 void show_ending(GameData *game) {
@@ -60,76 +51,200 @@ void show_ending(GameData *game) {
   printf("感谢您的游玩！\n");
   printf("=====================================\n");
 }
+
+static int get_enemy_type(GameData *game) {
+  switch (game->current_location) {
+  case 0:
+  case 4:
+  case 13:
+    return -1;
+  case 1:
+    return rand() % 3 == 2 ? 11 : rand() % 2;
+  case 2:
+    return rand() % 2 ? 2 : 16;
+  case 3:
+    return 3;
+  case 5:
+    return 4;
+  case 6:
+    return rand() % 2 ? 5 : 17;
+  case 7:
+    return 8 + (rand() % 2);
+  case 8:
+    return rand() % 2 ? 7 : 16;
+  case 9:
+    return 6;
+  case 10:
+    return rand() % 2 ? 10 : 19;
+  case 11:
+    return 21 + (rand() % 3);
+  case 12:
+    return rand() % 2 ? 11 : 12;
+  case 14:
+    return rand() % 2 ? 12 : 18;
+  case 15:
+    return 24;
+  default:
+    return rand() % 10;
+  }
+}
+
+static void handle_enemy_defeat(GameData *game, Enemy *enemy, int is_dragon) {
+  printf("你击败了%s！\n", enemy->name);
+  game->player.exp += enemy->exp_reward;
+  game->player.money += enemy->money_reward;
+  printf("获得了%d经验值和%d金币！\n", enemy->exp_reward, enemy->money_reward);
+
+  if (is_dragon && !game->dragon_defeated) {
+    game->dragon_defeated = 1;
+    show_ending(game);
+  }
+
+  if (game->player.exp >= game->player.level * 100)
+    level_up(game);
+}
+
+static void player_attack(GameData *game, Enemy *enemy, int is_dragon) {
+  int damage = calculate_damage(game->player.attack, enemy->defense);
+  enemy->hp -= damage;
+  printf("你对%s造成了%d点伤害！\n", enemy->name, damage);
+
+  if (enemy->hp <= 0)
+    handle_enemy_defeat(game, enemy, is_dragon);
+}
+
+static void player_use_skill(GameData *game, Enemy *enemy, int is_dragon) {
+  printf("\n可用技能:\n");
+  int skill_count = 0;
+  int available_skills[20];
+
+  for (int i = 0; i < game->learned_skill_count; i++) {
+    int idx = game->learned_skills[i];
+    Skill *skill = &game->skills[idx];
+
+    if (game->player.level >= skill->required_level) {
+      if (game->player.mp >= skill->mp_cost)
+        printf("%d. %s (消耗%d MP)\n", skill_count + 1, skill->name,
+               skill->mp_cost);
+      else
+        printf("%d. %s (消耗%d MP) [MP不足]\n", skill_count + 1, skill->name,
+               skill->mp_cost);
+      available_skills[skill_count++] = idx;
+    }
+  }
+
+  if (skill_count == 0) {
+    printf("你目前没有可以使用的技能！\n");
+    return;
+  }
+
+  printf("请选择技能 (0返回): ");
+  int choice;
+  scanf("%d", &choice);
+
+  if (choice == 0)
+    return;
+
+  choice--;
+  if (choice < 0 || choice >= skill_count) {
+    printf("无效的技能选择。\n");
+    return;
+  }
+
+  Skill *skill = &game->skills[available_skills[choice]];
+
+  if (game->player.mp < skill->mp_cost) {
+    printf("MP不足，无法使用此技能！\n");
+    return;
+  }
+
+  game->player.mp -= skill->mp_cost;
+
+  int intelligence_bonus = game->player.intelligence / 2;
+  int damage = skill->damage + game->player.attack + intelligence_bonus;
+
+  enemy->hp -= damage;
+  printf("你使用%s对%s造成了%d点伤害！(技能伤害%d + 攻击力%ld + "
+         "智力加成%d)\n",
+         skill->name, enemy->name, damage, skill->damage, game->player.attack,
+         intelligence_bonus);
+
+  if (skill->heal > 0) {
+    game->player.hp += skill->heal;
+    if (game->player.hp > game->player.max_hp)
+      game->player.hp = game->player.max_hp;
+    printf("你使用%s恢复了%d点生命值！\n", skill->name, skill->heal);
+  }
+
+  if (enemy->hp <= 0)
+    handle_enemy_defeat(game, enemy, is_dragon);
+}
+
+static int try_escape(GameData *game, Enemy *enemy) {
+  int enemy_level = estimate_enemy_level(enemy);
+  int chance = 50 + (game->player.level - enemy_level) * 5;
+  chance += (game->player.agility / 10) * 5;
+
+  if (chance < 10)
+    chance = 10;
+  if (chance > 90)
+    chance = 90;
+
+  if (rand() % 100 < chance) {
+    printf("你成功逃跑了！(逃跑率: %d%%)\n", chance);
+    return 1;
+  }
+
+  printf("逃跑失败！(逃跑率: %d%%)\n", chance);
+  return 0;
+}
+
+static void enemy_turn(GameData *game, Enemy *enemy) {
+  if (enemy->hp <= 0)
+    return;
+
+  int dodge_chance = (game->player.agility / 5) - estimate_enemy_level(enemy);
+  if (dodge_chance > 90)
+    dodge_chance = 90;
+  if (dodge_chance < 0)
+    dodge_chance = 0;
+
+  if (rand() % 100 < dodge_chance) {
+    printf("%s试图攻击你，但你敏捷地闪避开了！(闪避率: %d%%)\n", enemy->name,
+           dodge_chance);
+    return;
+  }
+
+  int damage = calculate_damage(enemy->attack, game->player.defense);
+  game->player.hp -= damage;
+  printf("%s对你造成了%d点伤害！\n", enemy->name, damage);
+
+  if (game->player.hp <= 0) {
+    printf("你被%s击败了...\n", enemy->name);
+    printf("游戏结束！\n");
+    exit(0);
+  }
+}
+
 void battle(GameData *game) {
-  // 如果恶龙已被击败
   if (game->dragon_defeated && game->current_location == 3) {
     printf("恶龙已经被你击败了，龙之城堡现在是一片废墟。\n");
     return;
   }
 
-  int enemy_type;
-  switch (game->current_location) {
-  case 0: // 村庄
-    printf("村庄里没有敌人。\n");
+  int enemy_type = get_enemy_type(game);
+  if (enemy_type == -1) {
+    printf("%s\n", game->current_location == 0   ? "村庄里没有敌人。"
+                   : game->current_location == 4 ? "在王城里很安全，没有敌人。"
+                                                 : "魔法学院里没有敌人。");
     return;
-  case 1: // 森林 - 哥布林、狼或毒蛇
-    enemy_type = rand() % 3;
-    if (enemy_type == 2)
-      enemy_type = 11; // 毒蛇
-    break;
-  case 2: // 洞穴 - 骷髅战士或木乃伊
-    enemy_type = (rand() % 2) ? 2 : 16;
-    break;
-  case 3: // 城堡 - 恶龙
-    enemy_type = 3;
-    break;
-  case 4: // 王城 - 安全
-    printf("在王城里很安全，没有敌人。\n");
-    return;
-  case 5: // 沙漠绿洲 - 沙漠蝎子
-    enemy_type = 4;
-    break;
-  case 6: // 雪山之巅 - 雪怪或冰霜巨龙
-    enemy_type = (rand() % 2) ? 5 : 17;
-    break;
-  case 7: // 地下城 - 石像鬼或恶魔
-    enemy_type = 8 + (rand() % 2);
-    break;
-  case 8: // 精灵之森 - 精灵法师
-    enemy_type = (rand() % 2) ? 7 : 16;
-    break;
-  case 9: // 海盗港湾 - 海盗
-    enemy_type = 6;
-    break;
-  case 10: // 火山口 - 火焰巨人或熔岩元素
-    enemy_type = (rand() % 2) ? 10 : 19;
-    break;
-  case 11: // 古代遗迹 - 堕天使或混沌体或虚空行者
-    enemy_type = (rand() % 3) + 21;
-    break;
-  case 12: // 黑暗沼泽 - 幽灵或石头人或黑暗法师
-    enemy_type = (rand() % 2) ? 11 : 12;
-    break;
-  case 13: // 魔法学院
-    printf("魔法学院里没有敌人。\n");
-    return;
-  case 14: // 幽灵船 - 幽灵或刺客
-    enemy_type = (rand() % 2) ? 12 : 18;
-    break;
-
-  case 15: // 决斗场 - 奥赛罗
-    enemy_type = 24;
-    break;
-  default:
-    enemy_type = rand() % 10;
   }
 
   Enemy enemy = game->enemies[enemy_type];
+  int is_dragon = (enemy_type == 3);
   printf("\n遭遇了%s！\n", enemy.name);
 
   while (game->player.hp > 0 && enemy.hp > 0) {
-    int choice, damage;
-
     printf("\n---------- 战斗信息 ----------\n");
     printf("%s 生命值: %d/%d\n", enemy.name, enemy.hp, enemy.max_hp);
     printf("%s 生命值: %ld/%ld\n", game->player.name, game->player.hp,
@@ -142,6 +257,7 @@ void battle(GameData *game) {
     printf("3. 逃跑\n");
     printf("请选择行动: ");
 
+    int choice;
     if (scanf("%d", &choice) != 1) {
       while (getchar() != '\n')
         ;
@@ -150,200 +266,25 @@ void battle(GameData *game) {
     }
 
     switch (choice) {
-    case 1: // 普通攻击
-      damage = calculate_damage(game->player.attack, enemy.defense);
-      enemy.hp -= damage;
-      printf("你对%s造成了%d点伤害！\n", enemy.name, damage);
-      // 击败恶龙
-      if (enemy_type == 3 && enemy.hp <= 0 && !game->dragon_defeated) {
-        printf("你击败了%s！\n", enemy.name);
-        game->player.exp += enemy.exp_reward;
-        game->player.money += enemy.money_reward;
-        printf("获得了%d经验值和%d金币！\n", enemy.exp_reward,
-               enemy.money_reward);
-
-        game->dragon_defeated = 1;
-
-        show_ending(game);
-
-        if (game->player.exp >= game->player.level * 100) {
-          level_up(game);
-        }
-
-        return;
-      }
-
-      if (enemy.hp <= 0) {
-        printf("你击败了%s！\n", enemy.name);
-        game->player.exp += enemy.exp_reward;
-        game->player.money += enemy.money_reward;
-        printf("获得了%d经验值和%d金币！\n", enemy.exp_reward,
-               enemy.money_reward);
-
-        if (game->player.exp >= game->player.level * 100) {
-          level_up(game);
-        }
-        return;
-      }
+    case 1:
+      player_attack(game, &enemy, is_dragon);
       break;
-
-    case 2: // 使用技能
-    {
-      printf("\n可用技能:\n");
-      int skill_count = 0;
-      int available_skills[20];
-
-      for (int i = 0; i < game->learned_skill_count; i++) {
-        int skill_index = game->learned_skills[i];
-        Skill *skill = &game->skills[skill_index];
-
-        if (game->player.level >= skill->required_level) {
-          if (game->player.mp >= skill->mp_cost) {
-            printf("%d. %s (消耗%d MP)\n", skill_count + 1, skill->name,
-                   skill->mp_cost);
-          } else {
-            printf("%d. %s (消耗%d MP) [MP不足]\n", skill_count + 1,
-                   skill->name, skill->mp_cost);
-          }
-          available_skills[skill_count] = skill_index;
-          skill_count++;
-        }
-      }
-
-      if (skill_count == 0) {
-        printf("你目前没有可以使用的技能！\n");
-        continue;
-      }
-
-      printf("请选择技能 (0返回): ");
-      int skill_choice;
-      scanf("%d", &skill_choice);
-
-      if (skill_choice == 0)
-        continue;
-
-      skill_choice--;
-
-      if (skill_choice >= 0 && skill_choice < skill_count) {
-        Skill *skill = &game->skills[available_skills[skill_choice]];
-
-        if (game->player.mp >= skill->mp_cost) {
-          game->player.mp -= skill->mp_cost;
-
-          int base_damage =
-              skill->damage + game->player.attack; // 技能伤害+玩家攻击
-          int intelligence_bonus =
-              game->player.intelligence / 2; // 智力每2点增加1点技能伤害
-          damage = base_damage + intelligence_bonus;
-
-          enemy.hp -= damage;
-          printf("你使用%s对%s造成了%d点伤害！(技能伤害%d + 攻击力%ld + "
-                 "智力加成%d)\n",
-                 skill->name, enemy.name, damage, skill->damage,
-                 game->player.attack, intelligence_bonus);
-
-          if (skill->heal > 0) {
-            int heal_amount = skill->heal;
-            game->player.hp += heal_amount;
-            if (game->player.hp > game->player.max_hp) {
-              game->player.hp = game->player.max_hp;
-            }
-            printf("你使用%s恢复了%d点生命值！\n", skill->name, heal_amount);
-          }
-
-          // 击败恶龙
-          if (enemy_type == 3 && enemy.hp <= 0 && !game->dragon_defeated) {
-            printf("你击败了%s！\n", enemy.name);
-            game->player.exp += enemy.exp_reward;
-            game->player.money += enemy.money_reward;
-            printf("获得了%d经验值和%d金币！\n", enemy.exp_reward,
-                   enemy.money_reward);
-
-            game->dragon_defeated = 1;
-
-            show_ending(game);
-
-            if (game->player.exp >= game->player.level * 100) {
-              level_up(game);
-            }
-
-            return;
-          }
-
-          if (enemy.hp <= 0) {
-            printf("你击败了%s！\n", enemy.name);
-            game->player.exp += enemy.exp_reward;
-            game->player.money += enemy.money_reward;
-            printf("获得了%d经验值和%d金币！\n", enemy.exp_reward,
-                   enemy.money_reward);
-
-            if (game->player.exp >= game->player.level * 100) {
-              level_up(game);
-            }
-            return;
-          }
-        } else {
-          printf("MP不足，无法使用此技能！\n");
-          continue;
-        }
-      } else {
-        printf("无效的技能选择。\n");
-        continue;
-      }
-    } break;
-
-    case 3: // 逃跑
-      if (enemy_type == 3) {
+    case 2:
+      player_use_skill(game, &enemy, is_dragon);
+      continue;
+    case 3:
+      if (is_dragon) {
         printf("恶龙的强大气息让你无法移动！\n");
-      } else {
-        int enemy_level = estimate_enemy_level(&enemy);
-
-        // 根据等级与敌人等级差计算逃跑率
-        int escape_chance = 50 + (game->player.level - enemy_level) * 5;
-
-        escape_chance += (game->player.agility / 10) * 5;
-
-        if (escape_chance < 10)
-          escape_chance = 10;
-        if (escape_chance > 90)
-          escape_chance = 90;
-
-        if (rand() % 100 < escape_chance) {
-          printf("你成功逃跑了！(逃跑率: %d%%)\n", escape_chance);
-          return;
-        } else {
-          printf("逃跑失败！(逃跑率: %d%%)\n", escape_chance);
-        }
+        continue;
       }
+      if (try_escape(game, &enemy))
+        return;
       break;
-
     default:
       printf("无效的选择。\n");
       continue;
     }
 
-    if (enemy.hp > 0) {
-      int enemy_level = estimate_enemy_level(&enemy);
-      int dodge_chance = (game->player.agility / 5 - enemy_level);
-      if (dodge_chance > 90)
-        dodge_chance = 90;
-      if (dodge_chance < 0)
-        dodge_chance = 0;
-
-      if (rand() % 100 < dodge_chance) {
-        printf("%s试图攻击你，但你敏捷地闪避开了！(闪避率: %d%%)\n", enemy.name,
-               dodge_chance);
-      } else {
-        int damage = calculate_damage(enemy.attack, game->player.defense);
-        game->player.hp -= damage;
-        printf("%s对你造成了%d点伤害！\n", enemy.name, damage);
-      }
-
-      if (game->player.hp <= 0) {
-        printf("你被%s击败了...\n", enemy.name);
-        printf("游戏结束！\n");
-        exit(0);
-      }
-    }
+    enemy_turn(game, &enemy);
   }
 }
