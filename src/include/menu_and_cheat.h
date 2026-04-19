@@ -1,6 +1,11 @@
 #pragma once
 
 #include "game_type.h"
+#include "inventory.h"
+#include "menu.h"
+#include "npc_dialog.h"
+#include "shop.h"
+#include "skill_and_cheat.h"
 
 void main_menu(GameData *game);
 void cheat_game(GameData *game);
