@@ -1,7 +1,7 @@
 #include "./include/menu.h"
-#include "include/battle.h"
-#include "include/game_date.h"
-#include "include/menu_and_cheat.h"
+#include "./include/battle.h"
+#include "./include/game_date.h"
+#include "./include/menu_and_cheat.h"
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -94,9 +94,9 @@ void move(GameData *game) {
     return;
   }
 
-  choice--;
+  choice--; // 减1是为了匹配数组索引
 
-  if (choice == 666) {
+  if (choice == 667) {
     cheat_game(game);
     return;
   }
@@ -115,7 +115,7 @@ void move(GameData *game) {
 void rest(GameData *game) {
   int type = game->locations[game->current_location].type;
 
-  if (type != 0 && type != 4 && type != 5) {
+  if (type != LOC_TOWN && type != LOC_CAPITAL && type != LOC_OASIS) {
     printf("只有在城镇、王城或绿洲等地才能休息！\n");
     return;
   }

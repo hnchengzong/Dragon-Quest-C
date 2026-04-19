@@ -2,6 +2,7 @@
 #include "./include/menu_and_cheat.h"
 #include "./include/shop.h"
 #include <stdio.h>
+#include <stdlib.h>
 
 static void show_npc_dialog(GameData *game, int npc_index) {
   if (game->dragon_defeated && (npc_index == 1 || npc_index == 5 ||
@@ -103,6 +104,21 @@ static void handle_skill_learn(GameData *game, int npc_index) {
     learn_skills(game);
 }
 
+typedef void (*NpcAction)(GameData *, int);
+
+static NpcAction get_npc_action(int behavior) {
+  switch (behavior) {
+  case NPC_INN:
+    return handle_inn;
+  case NPC_SHOP:
+    return handle_shop;
+  case NPC_SKILL:
+    return handle_skill_learn;
+  default:
+    return NULL;
+  }
+}
+
 void talk_to_npc(GameData *game) {
   int npc_count = 0;
   int npc_indices[15];
@@ -176,11 +192,7 @@ void talk_to_npc(GameData *game) {
   int npc_index = npc_indices[choice];
   show_npc_dialog(game, npc_index);
 
-  if (npc_index == 18)
-    handle_inn(game, npc_index);
-  else if (npc_index == 0 || npc_index == 2 || npc_index == 3 ||
-           npc_index == 8 || npc_index == 9 || npc_index == 13)
-    handle_shop(game, npc_index);
-  else if (npc_index == 4)
-    handle_skill_learn(game, npc_index);
+  NpcAction action = get_npc_action(game->npcs[npc_index].behavior);
+  if (action)
+    action(game, npc_index);
 }

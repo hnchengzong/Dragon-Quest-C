@@ -8,6 +8,9 @@
 #define MAX_NPCS 50
 #define MAX_SHOP_ITEMS 30
 
+enum ItemType { ITEM_WEAPON, ITEM_ARMOR, ITEM_CONSUMABLE };
+enum NpcBehavior { NPC_NONE, NPC_INN, NPC_SHOP, NPC_SKILL, NPC_DIALOG_ONLY };
+
 typedef struct {
   char name[MAX_NAME_LENGTH];
   long hp;
@@ -78,7 +81,7 @@ typedef struct {
   char dialog[200];
   char additional_dialogs[5][200]; // 添加额外对话
   int additional_dialogs_count;
-  int item_to_sell; // -1表示不卖物品
+  int behavior; // NPC行为类型 (NpcBehavior)
   int item_price;
   int shop_items[MAX_SHOP_ITEMS];
   int shop_item_count;
@@ -108,3 +111,22 @@ typedef struct {
   const char *description;
   MenuAction action;
 } MenuItem;
+
+enum LocationType {
+  LOC_TOWN,
+  LOC_FOREST,
+  LOC_CAVE,
+  LOC_CASTLE,
+  LOC_CAPITAL,
+  LOC_OASIS,
+  LOC_SNOW,
+  LOC_DUNGEON,
+  LOC_ELF_FOREST,
+  LOC_PIRATE,
+  LOC_VOLCANO,
+  LOC_RUINS,
+  LOC_SWAMP,
+  LOC_MAGIC_ACADEMY,
+  LOC_GHOST,
+  LOC_ARENA
+};

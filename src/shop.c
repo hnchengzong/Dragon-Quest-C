@@ -10,13 +10,13 @@ void shop_menu(GameData *game, int npc_index) {
     printf("%d. %s - %d金币 ", i + 1, item->name, item->price);
 
     switch (item->type) {
-    case 0:
+    case ITEM_WEAPON:
       printf("(武器: +%d攻击)", item->value);
       break;
-    case 1:
+    case ITEM_ARMOR:
       printf("(防具: +%d防御)", item->value);
       break;
-    case 2:
+    case ITEM_CONSUMABLE:
       printf("(消耗品: 恢复%d HP)", item->value);
       break;
     }

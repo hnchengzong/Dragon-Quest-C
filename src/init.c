@@ -52,68 +52,68 @@ void init_world(GameData *game) {
   strcpy(game->locations[0].name, "瓦纳卡村");
   strcpy(game->locations[0].description,
          "一个宁静的小村庄，承载了你儿时的记忆，是你冒险旅程的起点。");
-  game->locations[0].type = 0;
+  game->locations[0].type = LOC_TOWN;
 
   strcpy(game->locations[1].name, "野外森林");
   strcpy(game->locations[1].description, "野外的森林，经常有怪物出没。");
-  game->locations[1].type = 1;
+  game->locations[1].type = LOC_FOREST;
 
   strcpy(game->locations[2].name, "洞穴");
   strcpy(game->locations[2].description, "阴森的洞穴。");
-  game->locations[2].type = 2;
+  game->locations[2].type = LOC_CAVE;
 
   strcpy(game->locations[3].name, "龙巢");
   strcpy(game->locations[3].description, "恶龙的巢穴，最终决战的地方。");
-  game->locations[3].type = 3;
+  game->locations[3].type = LOC_CASTLE;
 
   strcpy(game->locations[4].name, "王城");
   strcpy(game->locations[4].description, "王国的首都。");
-  game->locations[4].type = 4;
+  game->locations[4].type = LOC_CAPITAL;
 
   strcpy(game->locations[5].name, "沙漠绿洲");
   strcpy(game->locations[5].description, "沙漠中的绿洲，可以休息。");
-  game->locations[5].type = 5;
+  game->locations[5].type = LOC_OASIS;
 
   strcpy(game->locations[6].name, "雪山");
   strcpy(game->locations[6].description,
          "寒冷的雪山，据说藏着宝藏，但有雪怪出没。");
-  game->locations[6].type = 6;
+  game->locations[6].type = LOC_SNOW;
 
   strcpy(game->locations[7].name, "地下城");
   strcpy(game->locations[7].description, "古老的地下城，充满了危险与机遇。");
-  game->locations[7].type = 7;
+  game->locations[7].type = LOC_DUNGEON;
 
   strcpy(game->locations[8].name, "精灵之森");
   strcpy(game->locations[8].description, "精灵居住的森林。也潜伏着黑暗");
-  game->locations[8].type = 8;
+  game->locations[8].type = LOC_ELF_FOREST;
 
   strcpy(game->locations[9].name, "海盗港湾");
   strcpy(game->locations[9].description, "海盗聚集的港湾。");
-  game->locations[9].type = 9;
+  game->locations[9].type = LOC_PIRATE;
 
   strcpy(game->locations[10].name, "火山口");
   strcpy(game->locations[10].description, "炽热的火山地带。");
-  game->locations[10].type = 10;
+  game->locations[10].type = LOC_VOLCANO;
 
   strcpy(game->locations[11].name, "古代遗迹");
   strcpy(game->locations[11].description, "失落文明的遗迹，（难度较高）");
-  game->locations[11].type = 11;
+  game->locations[11].type = LOC_RUINS;
 
   strcpy(game->locations[12].name, "黑暗沼泽");
   strcpy(game->locations[12].description, "阴暗潮湿的沼泽地。");
-  game->locations[12].type = 12;
+  game->locations[12].type = LOC_SWAMP;
 
   strcpy(game->locations[13].name, "魔法学院");
   strcpy(game->locations[13].description, "学习高级魔法的学府。");
-  game->locations[13].type = 13;
+  game->locations[13].type = LOC_MAGIC_ACADEMY;
 
   strcpy(game->locations[14].name, "幽灵之地");
   strcpy(game->locations[14].description, "充满了幽灵的森林。");
-  game->locations[14].type = 14;
+  game->locations[14].type = LOC_GHOST;
 
   strcpy(game->locations[15].name, "决斗场");
   strcpy(game->locations[15].description, "与英雄决斗的场地。（难度较高）");
-  game->locations[15].type = 15;
+  game->locations[15].type = LOC_ARENA;
 
   // ---------------物品------------------
   strcpy(game->items[0].name, "铁剑");
@@ -569,70 +569,70 @@ void init_world(GameData *game) {
   // -----------NPC-----------------
   strcpy(game->npcs[0].name, "武器商人");
   strcpy(game->npcs[0].dialog, "欢迎光临！看看我的武器吧。");
-  game->npcs[0].item_to_sell = -1;
+  game->npcs[0].behavior = NPC_SHOP;
   game->npcs[0].item_price = 0;
-  game->npcs[0].shop_items[0] = 0;  // 铁剑
-  game->npcs[0].shop_items[1] = 3;  // 钢剑
-  game->npcs[0].shop_items[2] = 7;  // 双手剑
-  game->npcs[0].shop_items[3] = 12; // 短剑
-  game->npcs[0].shop_items[4] = 13; // 院长矛
-  game->npcs[0].shop_items[5] = 14; // 战斧
-  game->npcs[0].shop_items[6] = 15; // 精灵弓
-  game->npcs[0].shop_items[7] = 16; // 法杖
+  game->npcs[0].shop_items[0] = 0;
+  game->npcs[0].shop_items[1] = 3;
+  game->npcs[0].shop_items[2] = 7;
+  game->npcs[0].shop_items[3] = 12;
+  game->npcs[0].shop_items[4] = 13;
+  game->npcs[0].shop_items[5] = 14;
+  game->npcs[0].shop_items[6] = 15;
+  game->npcs[0].shop_items[7] = 16;
   game->npcs[0].shop_item_count = 8;
 
   strcpy(game->npcs[1].name, "村长");
   strcpy(game->npcs[1].dialog,
          "勇士，感谢你为我们挺身而出。你一定能击败恶龙！");
-  game->npcs[1].item_to_sell = -1;
+  game->npcs[1].behavior = NPC_DIALOG_ONLY;
   game->npcs[1].item_price = 0;
   game->npcs[1].shop_item_count = 0;
 
   strcpy(game->npcs[2].name, "防具商人");
   strcpy(game->npcs[2].dialog, "高质量的防具能让你在战斗中生存更久。");
-  game->npcs[2].item_to_sell = -1;
+  game->npcs[2].behavior = NPC_SHOP;
   game->npcs[2].item_price = 0;
-  game->npcs[2].shop_items[0] = 1;  // 皮甲
-  game->npcs[2].shop_items[1] = 4;  // 锁子甲
-  game->npcs[2].shop_items[2] = 8;  // 板甲
-  game->npcs[2].shop_items[3] = 11; // 龙鳞甲
-  game->npcs[2].shop_items[4] = 17; // 布衣
-  game->npcs[2].shop_items[5] = 18; // 鳞甲
-  game->npcs[2].shop_items[6] = 19; // 链甲
-  game->npcs[2].shop_items[7] = 20; // 骑士铠甲
-  game->npcs[2].shop_items[8] = 21; // 法师袍
+  game->npcs[2].shop_items[0] = 1;
+  game->npcs[2].shop_items[1] = 4;
+  game->npcs[2].shop_items[2] = 8;
+  game->npcs[2].shop_items[3] = 11;
+  game->npcs[2].shop_items[4] = 17;
+  game->npcs[2].shop_items[5] = 18;
+  game->npcs[2].shop_items[6] = 19;
+  game->npcs[2].shop_items[7] = 20;
+  game->npcs[2].shop_items[8] = 21;
   game->npcs[2].shop_item_count = 9;
 
   strcpy(game->npcs[3].name, "药剂师");
   strcpy(game->npcs[3].dialog, "生命药水和魔法药水，冒险必备！");
-  game->npcs[3].item_to_sell = -1;
+  game->npcs[3].behavior = NPC_SHOP;
   game->npcs[3].item_price = 0;
-  game->npcs[3].shop_items[0] = 2;  // 生命药水
-  game->npcs[3].shop_items[1] = 5;  // 高级生命药水
-  game->npcs[3].shop_items[2] = 9;  // 超级生命药水
-  game->npcs[3].shop_items[3] = 6;  // 魔法药水
-  game->npcs[3].shop_items[4] = 23; // 中级生命药水
-  game->npcs[3].shop_items[5] = 24; // 高级魔法药水
-  game->npcs[3].shop_items[6] = 26; // 力量药剂
-  game->npcs[3].shop_items[7] = 27; // 敏捷药剂
-  game->npcs[3].shop_items[8] = 28; // 智力药剂
+  game->npcs[3].shop_items[0] = 2;
+  game->npcs[3].shop_items[1] = 5;
+  game->npcs[3].shop_items[2] = 9;
+  game->npcs[3].shop_items[3] = 6;
+  game->npcs[3].shop_items[4] = 23;
+  game->npcs[3].shop_items[5] = 24;
+  game->npcs[3].shop_items[6] = 26;
+  game->npcs[3].shop_items[7] = 27;
+  game->npcs[3].shop_items[8] = 28;
   game->npcs[3].shop_item_count = 9;
 
   strcpy(game->npcs[4].name, "技能导师");
   strcpy(game->npcs[4].dialog, "我可以教你更强大的技能，但你需要足够的等级。");
-  game->npcs[4].item_to_sell = -1;
+  game->npcs[4].behavior = NPC_SKILL;
   game->npcs[4].item_price = 0;
   game->npcs[4].shop_item_count = 0;
 
   strcpy(game->npcs[5].name, "国王");
   strcpy(game->npcs[5].dialog, "无畏的勇者，希望你能成功讨伐恶龙！");
-  game->npcs[5].item_to_sell = -1;
+  game->npcs[5].behavior = NPC_DIALOG_ONLY;
   game->npcs[5].item_price = 0;
   game->npcs[5].shop_item_count = 0;
 
   strcpy(game->npcs[6].name, "船长");
   strcpy(game->npcs[6].dialog, "想要出海探险吗？这片海域非常危险。");
-  game->npcs[6].item_to_sell = -1;
+  game->npcs[6].behavior = NPC_DIALOG_ONLY;
   game->npcs[6].item_price = 0;
   game->npcs[6].shop_item_count = 0;
 
@@ -643,7 +643,7 @@ void init_world(GameData *game) {
   strcpy(game->npcs[7].additional_dialogs[1],
          "但随着时光流逝，魔法逐渐衰弱，我们需要你的力量来恢复它。");
   game->npcs[7].additional_dialogs_count = 2;
-  game->npcs[7].item_to_sell = -1;
+  game->npcs[7].behavior = NPC_DIALOG_ONLY;
   game->npcs[7].item_price = 0;
   game->npcs[7].shop_item_count = 0;
 
@@ -655,15 +655,15 @@ void init_world(GameData *game) {
   strcpy(game->npcs[8].additional_dialogs[1],
          "最近，我找到了一些稀有的矿石，可以制作出非常强大的装备。");
   game->npcs[8].additional_dialogs_count = 2;
-  game->npcs[8].item_to_sell = -1;
+  game->npcs[8].behavior = NPC_SHOP;
   game->npcs[8].item_price = 0;
-  game->npcs[8].shop_items[0] = 7;  // 双手剑
-  game->npcs[8].shop_items[1] = 8;  // 板甲
-  game->npcs[8].shop_items[2] = 10; // 传说之剑
-  game->npcs[8].shop_items[3] = 11; // 龙鳞甲
-  game->npcs[8].shop_items[4] = 14; // 战斧
-  game->npcs[8].shop_items[5] = 16; // 法杖
-  game->npcs[8].shop_items[6] = 20; // 骑士铠甲
+  game->npcs[8].shop_items[0] = 7;
+  game->npcs[8].shop_items[1] = 8;
+  game->npcs[8].shop_items[2] = 10;
+  game->npcs[8].shop_items[3] = 11;
+  game->npcs[8].shop_items[4] = 14;
+  game->npcs[8].shop_items[5] = 16;
+  game->npcs[8].shop_items[6] = 20;
   game->npcs[8].shop_item_count = 7;
 
   strcpy(game->npcs[9].name, "神秘商人");
@@ -673,14 +673,14 @@ void init_world(GameData *game) {
   strcpy(game->npcs[9].additional_dialogs[1],
          "如果你有足够的金币，我可以卖给你真正强大的物品。");
   game->npcs[9].additional_dialogs_count = 2;
-  game->npcs[9].item_to_sell = -1;
+  game->npcs[9].behavior = NPC_SHOP;
   game->npcs[9].item_price = 0;
-  game->npcs[9].shop_items[0] = 9;  // 超级生命药水
-  game->npcs[9].shop_items[1] = 10; // 传说之剑
-  game->npcs[9].shop_items[2] = 11; // 龙鳞甲
-  game->npcs[9].shop_items[4] = 26; // 力量药剂
-  game->npcs[9].shop_items[5] = 27; // 敏捷药剂
-  game->npcs[9].shop_items[6] = 28; // 智力药剂
+  game->npcs[9].shop_items[0] = 9;
+  game->npcs[9].shop_items[1] = 10;
+  game->npcs[9].shop_items[2] = 11;
+  game->npcs[9].shop_items[4] = 26;
+  game->npcs[9].shop_items[5] = 27;
+  game->npcs[9].shop_items[6] = 28;
   game->npcs[9].shop_item_count = 7;
 
   strcpy(game->npcs[10].name, "老渔夫");
@@ -690,7 +690,7 @@ void init_world(GameData *game) {
   strcpy(game->npcs[10].additional_dialogs[1],
          "据说在深海中有一座沉没的城市，但到现在都没人能找到它。");
   game->npcs[10].additional_dialogs_count = 2;
-  game->npcs[10].item_to_sell = -1;
+  game->npcs[10].behavior = NPC_DIALOG_ONLY;
   game->npcs[10].item_price = 0;
   game->npcs[10].shop_item_count = 0;
 
@@ -701,7 +701,7 @@ void init_world(GameData *game) {
   strcpy(game->npcs[11].additional_dialogs[1],
          "如果你愿意花时间学习，我可以教你一些有用的技能。");
   game->npcs[11].additional_dialogs_count = 2;
-  game->npcs[11].item_to_sell = -1;
+  game->npcs[11].behavior = NPC_DIALOG_ONLY;
   game->npcs[11].item_price = 0;
   game->npcs[11].shop_item_count = 0;
 
@@ -712,7 +712,7 @@ void init_world(GameData *game) {
   strcpy(game->npcs[12].additional_dialogs[1],
          "他最后一次出现在黑暗沼泽附近，小心点。");
   game->npcs[12].additional_dialogs_count = 2;
-  game->npcs[12].item_to_sell = -1;
+  game->npcs[12].behavior = NPC_DIALOG_ONLY;
   game->npcs[12].item_price = 0;
   game->npcs[12].shop_item_count = 0;
 
@@ -723,16 +723,16 @@ void init_world(GameData *game) {
   strcpy(game->npcs[13].additional_dialogs[1],
          "如果你能用等价的金钱交易，我可以为你制作强大的药水。");
   game->npcs[13].additional_dialogs_count = 2;
-  game->npcs[13].item_to_sell = -1;
+  game->npcs[13].behavior = NPC_SHOP;
   game->npcs[13].item_price = 0;
-  game->npcs[13].shop_items[0] = 5;  // 高级生命药水
-  game->npcs[13].shop_items[1] = 6;  // 魔法药水
-  game->npcs[13].shop_items[2] = 9;  // 超级生命药水
-  game->npcs[13].shop_items[3] = 23; // 中级生命药水
-  game->npcs[13].shop_items[4] = 24; // 高级魔法药水
-  game->npcs[13].shop_items[5] = 26; // 力量药剂
-  game->npcs[13].shop_items[6] = 27; // 敏捷药剂
-  game->npcs[13].shop_items[7] = 28; // 智力药剂
+  game->npcs[13].shop_items[0] = 5;
+  game->npcs[13].shop_items[1] = 6;
+  game->npcs[13].shop_items[2] = 9;
+  game->npcs[13].shop_items[3] = 23;
+  game->npcs[13].shop_items[4] = 24;
+  game->npcs[13].shop_items[5] = 26;
+  game->npcs[13].shop_items[6] = 27;
+  game->npcs[13].shop_items[7] = 28;
   game->npcs[13].shop_item_count = 8;
 
   strcpy(game->npcs[14].name, "占卜师");
@@ -742,7 +742,7 @@ void init_world(GameData *game) {
   strcpy(game->npcs[14].additional_dialogs[1],
          "小心前方的道路，危险正等着你。");
   game->npcs[14].additional_dialogs_count = 2;
-  game->npcs[14].item_to_sell = -1;
+  game->npcs[14].behavior = NPC_DIALOG_ONLY;
   game->npcs[14].item_price = 0;
   game->npcs[14].shop_item_count = 0;
 
@@ -751,7 +751,7 @@ void init_world(GameData *game) {
   strcpy(game->npcs[16].additional_dialogs[1],
          "如果你需要补给，村里的商人们会提供帮助。");
   game->npcs[16].additional_dialogs_count = 2;
-  game->npcs[16].item_to_sell = -1;
+  game->npcs[16].behavior = NPC_DIALOG_ONLY;
   game->npcs[16].item_price = 0;
   game->npcs[16].shop_item_count = 0;
 
@@ -760,7 +760,7 @@ void init_world(GameData *game) {
   strcpy(game->npcs[17].additional_dialogs[0],
          "我年轻时也曾像你一样勇敢，但岁月不饶人。");
   game->npcs[17].additional_dialogs_count = 1;
-  game->npcs[17].item_to_sell = -1;
+  game->npcs[17].behavior = NPC_DIALOG_ONLY;
   game->npcs[17].item_price = 0;
   game->npcs[17].shop_item_count = 0;
 
@@ -772,8 +772,8 @@ void init_world(GameData *game) {
   strcpy(game->npcs[18].additional_dialogs[1],
          "旅途劳累，好好休息才能迎接更大的挑战。");
   game->npcs[18].additional_dialogs_count = 2;
-  game->npcs[18].item_to_sell = -1;
-  game->npcs[18].item_price = 50; // 休息费用
+  game->npcs[18].behavior = NPC_INN;
+  game->npcs[18].item_price = 50;
   game->npcs[18].shop_item_count = 0;
 
   strcpy(game->npcs[19].name, "神秘女子");
@@ -781,7 +781,7 @@ void init_world(GameData *game) {
   strcpy(game->npcs[19].additional_dialogs[0], "命运正引导着你，年轻的勇者。");
   strcpy(game->npcs[19].additional_dialogs[1], "小心隐藏在阴影中的敌人。");
   game->npcs[19].additional_dialogs_count = 2;
-  game->npcs[19].item_to_sell = -1;
+  game->npcs[19].behavior = NPC_DIALOG_ONLY;
   game->npcs[19].item_price = 0;
   game->npcs[19].shop_item_count = 0;
 

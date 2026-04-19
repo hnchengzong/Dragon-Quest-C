@@ -18,13 +18,13 @@ void show_inventory(GameData *game) {
   for (int i = 0; i < game->inventory_count; i++) {
     printf("%d. %s", i + 1, game->inventory[i].name);
     switch (game->inventory[i].type) {
-    case 0:
+    case ITEM_WEAPON:
       printf(" (武器: +%d攻击)", game->inventory[i].value);
       break;
-    case 1:
+    case ITEM_ARMOR:
       printf(" (防具: +%d防御)", game->inventory[i].value);
       break;
-    case 2:
+    case ITEM_CONSUMABLE:
       printf(" (消耗品: 恢复%d HP)", game->inventory[i].value);
       break;
     }
@@ -79,17 +79,17 @@ void use_item(GameData *game) {
   Item *item = &game->inventory[choice];
 
   switch (item->type) {
-  case 0:
+  case ITEM_WEAPON:
     game->player.attack += item->value;
     printf("你装备了%s，攻击力增加了%d点！当前总攻击力: %ld\n", item->name,
            item->value, game->player.attack);
     break;
-  case 1:
+  case ITEM_ARMOR:
     game->player.defense += item->value;
     printf("你装备了%s，防御力增加了%d点！当前总防御力: %ld\n", item->name,
            item->value, game->player.defense);
     break;
-  case 2:
+  case ITEM_CONSUMABLE:
     use_consumable(game, item);
     break;
   }
