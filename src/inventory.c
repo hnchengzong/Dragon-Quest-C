@@ -37,22 +37,29 @@ static void use_consumable(GameData *game, Item *item) {
   if (strcmp(item->name, "力量药剂") == 0) {
     game->player.attack += 5;
     printf("你使用了%s，永久增加了5点攻击力！\n", item->name);
-  } else if (strcmp(item->name, "敏捷剂") == 0) {
+    return;
+  }
+
+  if (strcmp(item->name, "敏捷剂") == 0) {
     game->player.agility += 5;
     printf("你使用了%s，永久增加了5点敏捷！\n", item->name);
-  } else if (strcmp(item->name, "智力药剂") == 0) {
+    return;
+  }
+
+  if (strcmp(item->name, "智力药剂") == 0) {
     game->player.intelligence += 5;
     game->player.max_mp += 20;
     game->player.mp += 20;
     if (game->player.mp > game->player.max_mp)
       game->player.mp = game->player.max_mp;
     printf("你使用了%s，永久增加了5点智力和20点最大魔法值！\n", item->name);
-  } else {
-    game->player.hp += item->value;
-    if (game->player.hp > game->player.max_hp)
-      game->player.hp = game->player.max_hp;
-    printf("你使用了%s，恢复了%d点生命值！\n", item->name, item->value);
+    return;
   }
+
+  game->player.hp += item->value;
+  if (game->player.hp > game->player.max_hp)
+    game->player.hp = game->player.max_hp;
+  printf("你使用了%s，恢复了%d点生命值！\n", item->name, item->value);
 }
 
 void use_item(GameData *game) {
@@ -79,17 +86,17 @@ void use_item(GameData *game) {
   Item *item = &game->inventory[choice];
 
   switch (item->type) {
-  case ITEM_WEAPON:
+  case 0:
     game->player.attack += item->value;
     printf("你装备了%s，攻击力增加了%d点！当前总攻击力: %ld\n", item->name,
            item->value, game->player.attack);
     break;
-  case ITEM_ARMOR:
+  case 1:
     game->player.defense += item->value;
     printf("你装备了%s，防御力增加了%d点！当前总防御力: %ld\n", item->name,
            item->value, game->player.defense);
     break;
-  case ITEM_CONSUMABLE:
+  case 2:
     use_consumable(game, item);
     break;
   }

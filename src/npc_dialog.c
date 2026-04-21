@@ -5,53 +5,39 @@
 #include <stdlib.h>
 
 static void show_npc_dialog(GameData *game, int npc_index) {
-  if (game->dragon_defeated && (npc_index == 1 || npc_index == 5 ||
-                                npc_index == 16 || npc_index == 19)) {
+  if (game->dragon_defeated) {
     switch (npc_index) {
     case 1:
-      printf("\n%s: \"伟大的勇者！你拯救了我们所有人！\"",
-             game->npcs[npc_index].name);
-      printf("\n%s: \"整个村庄都在庆祝你的胜利！\"",
-             game->npcs[npc_index].name);
-      break;
+      printf("\n%s: \"伟大的勇者！你拯救了我们所有人！\"", game->npcs[npc_index].name);
+      printf("\n%s: \"整个村庄都在庆祝你的胜利！\"", game->npcs[npc_index].name);
+      return;
     case 5:
-      printf("\n%s: "
-             "\"伟大的英雄！您拯救了整个王国！人民将永远铭记你的功绩。\"",
-             game->npcs[npc_index].name);
-      printf("\n%s: \"王国的和平与繁荣都归功于你！\"",
-             game->npcs[npc_index].name);
+      printf("\n%s: \"伟大的英雄！您拯救了整个王国！人民将永远铭记你的功绩。\"", game->npcs[npc_index].name);
+      printf("\n%s: \"王国的和平与繁荣都归功于你！\"", game->npcs[npc_index].name);
       printf("\n%s: \"你的事迹将被各地传颂。\"", game->npcs[npc_index].name);
-      break;
+      return;
     case 12:
-      printf("\n%s:恭喜！你我都圆满完成各自的使命！",
-             game->npcs[npc_index].name);
-      break;
+      printf("\n%s:恭喜！你我都圆满完成各自的使命！", game->npcs[npc_index].name);
+      return;
     case 14:
-      printf("\n%s: \"你果然做到了，打破了既定的命运！\"",
-             game->npcs[npc_index].name);
+      printf("\n%s: \"你果然做到了，打破了既定的命运！\"", game->npcs[npc_index].name);
       printf("\n%s: \"但你仍需小心前方的道路。\"", game->npcs[npc_index].name);
-      break;
+      return;
     case 16:
-      printf("\n%s: \"英雄！感谢你拯救了我们的村庄！\"",
-             game->npcs[npc_index].name);
-      printf("\n%s: \"你将是我们传说中永远的英雄！\"",
-             game->npcs[npc_index].name);
-      break;
+      printf("\n%s: \"英雄！感谢你拯救了我们的村庄！\"", game->npcs[npc_index].name);
+      printf("\n%s: \"你将是我们传说中永远的英雄！\"", game->npcs[npc_index].name);
+      return;
     case 17:
-      printf("\n%s: \"力量会随岁月流逝，但勇气不会。！\"",
-             game->npcs[npc_index].name);
-      break;
+      printf("\n%s: \"力量会随岁月流逝，但勇气不会。\"", game->npcs[npc_index].name);
+      return;
     case 19:
-      printf("\n%s: \"命运的轨迹已经改变，光明重新回到了这个世界。\"",
-             game->npcs[npc_index].name);
+      printf("\n%s: \"命运的轨迹已经改变，光明重新回到了这个世界。\"", game->npcs[npc_index].name);
       printf("\n%s: \"你的勇气将被永远铭记\"", game->npcs[npc_index].name);
-      break;
+      return;
     }
-    return;
   }
 
-  printf("\n%s: \"%s\"\n", game->npcs[npc_index].name,
-         game->npcs[npc_index].dialog);
+  printf("\n%s: \"%s\"\n", game->npcs[npc_index].name, game->npcs[npc_index].dialog);
 
   for (int i = 0; i < game->npcs[npc_index].additional_dialogs_count; i++)
     printf("%s: \"%s\"\n", game->npcs[npc_index].name,

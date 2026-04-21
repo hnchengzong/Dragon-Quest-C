@@ -15,18 +15,19 @@ static void easter_egg(GameData *game) {
 }
 
 void main_menu(GameData *game) {
-  static const MenuItem menu_items[] = {{1, "查看状态", show_status},
-                                        {2, "移动", move},
-                                        {3, "寻找敌人", battle},
-                                        {4, "与NPC交谈", talk_to_npc},
-                                        {5, "查看背包", show_inventory},
-                                        {6, "使用物品", use_item},
-                                        {7, "休息", rest},
-                                        {8, "学习技能", learn_skills},
-                                        {9, "保存游戏", save_game},
-                                        {0, "退出游戏", exit_game},
-                                        {666, "作弊模式", cheat_game},
-                                        {114514, "彩蛋", easter_egg}};
+  static const MenuItem menu_items[] = {
+      {1, "查看状态", show_status},
+      {2, "移动", move},
+      {3, "寻找敌人", battle},
+      {4, "与NPC交谈", talk_to_npc},
+      {5, "查看背包", show_inventory},
+      {6, "使用物品", use_item},
+      {7, "休息", rest},
+      {8, "学习技能", learn_skills},
+      {9, "保存游戏", save_game},
+      {0, "退出游戏", exit_game},
+      {666, "作弊模式", cheat_game},
+      {114514, "彩蛋", easter_egg}};
   const int menu_count = sizeof(menu_items) / sizeof(menu_items[0]);
   int choice;
 
@@ -80,9 +81,10 @@ void show_status(GameData *game) {
 void move(GameData *game) {
   printf("\n========== 可去地点 ==========\n");
   for (int i = 0; i < MAX_LOCATIONS; i++) {
-    if (game->locations[i].name[0] != '\0' && i != game->current_location)
-      printf("%d. %s - %s\n", i + 1, game->locations[i].name,
-             game->locations[i].description);
+    if (game->locations[i].name[0] == '\0' || i == game->current_location)
+      continue;
+    printf("%d. %s - %s\n", i + 1, game->locations[i].name,
+           game->locations[i].description);
   }
 
   printf("请选择目的地 (输入对应数字): ");
@@ -101,10 +103,18 @@ void move(GameData *game) {
     return;
   }
 
-  if (choice < 0 || choice >= MAX_LOCATIONS ||
-      choice == game->current_location ||
-      game->locations[choice].name[0] == '\0') {
+  if (choice < 0 || choice >= MAX_LOCATIONS) {
     printf("无效的选择。\n");
+    return;
+  }
+
+  if (choice == game->current_location) {
+    printf("你已经在这里了。\n");
+    return;
+  }
+
+  if (game->locations[choice].name[0] == '\0') {
+    printf("该地点不存在。\n");
     return;
   }
 

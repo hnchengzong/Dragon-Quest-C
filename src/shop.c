@@ -29,8 +29,9 @@ void shop_menu(GameData *game, int npc_index) {
   int choice;
   scanf("%d", &choice);
 
-  if (choice == 0)
+  if (choice == 0) {
     return;
+  }
 
   choice--;
   if (choice < 0 || choice >= npc->shop_item_count) {

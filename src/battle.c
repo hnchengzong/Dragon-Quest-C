@@ -115,25 +115,26 @@ static void player_attack(GameData *game, Enemy *enemy, int is_dragon) {
 
 static void player_use_skill(GameData *game, Enemy *enemy, int is_dragon) {
   printf("\n可用技能:\n");
-  int skill_count = 0;
-  int available_skills[20];
+  int count = 0;
+  int skills[MAX_SKILLS];
 
   for (int i = 0; i < game->learned_skill_count; i++) {
     int idx = game->learned_skills[i];
     Skill *skill = &game->skills[idx];
 
-    if (game->player.level >= skill->required_level) {
-      if (game->player.mp >= skill->mp_cost)
-        printf("%d. %s (消耗%d MP)\n", skill_count + 1, skill->name,
-               skill->mp_cost);
-      else
-        printf("%d. %s (消耗%d MP) [MP不足]\n", skill_count + 1, skill->name,
-               skill->mp_cost);
-      available_skills[skill_count++] = idx;
-    }
+    if (game->player.level < skill->required_level)
+      continue;
+
+    if (game->player.mp >= skill->mp_cost)
+      printf("%d. %s (消耗%d MP)\n", count + 1, skill->name, skill->mp_cost);
+    else
+      printf("%d. %s (消耗%d MP) [MP不足]\n", count + 1, skill->name,
+             skill->mp_cost);
+
+    skills[count++] = idx;
   }
 
-  if (skill_count == 0) {
+  if (count == 0) {
     printf("你目前没有可以使用的技能！\n");
     return;
   }
@@ -146,12 +147,12 @@ static void player_use_skill(GameData *game, Enemy *enemy, int is_dragon) {
     return;
 
   choice--;
-  if (choice < 0 || choice >= skill_count) {
+  if (choice < 0 || choice >= count) {
     printf("无效的技能选择。\n");
     return;
   }
 
-  Skill *skill = &game->skills[available_skills[choice]];
+  Skill *skill = &game->skills[skills[choice]];
 
   if (game->player.mp < skill->mp_cost) {
     printf("MP不足，无法使用此技能！\n");
@@ -160,14 +161,13 @@ static void player_use_skill(GameData *game, Enemy *enemy, int is_dragon) {
 
   game->player.mp -= skill->mp_cost;
 
-  int intelligence_bonus = game->player.intelligence / 2;
-  int damage = skill->damage + game->player.attack + intelligence_bonus;
+  int int_bonus = game->player.intelligence / 2;
+  int damage = skill->damage + game->player.attack + int_bonus;
 
   enemy->hp -= damage;
-  printf("你使用%s对%s造成了%d点伤害！(技能伤害%d + 攻击力%ld + "
-         "智力加成%d)\n",
+  printf("你使用%s对%s造成了%d点伤害！(技能伤害%d + 攻击力%ld + 智力加成%d)\n",
          skill->name, enemy->name, damage, skill->damage, game->player.attack,
-         intelligence_bonus);
+         int_bonus);
 
   if (skill->heal > 0) {
     game->player.hp += skill->heal;
@@ -234,9 +234,14 @@ void battle(GameData *game) {
 
   int enemy_type = get_enemy_type(game);
   if (enemy_type == -1) {
-    printf("%s\n", game->current_location == 0   ? "村庄里没有敌人。"
-                   : game->current_location == 4 ? "在王城里很安全，没有敌人。"
-                                                 : "魔法学院里没有敌人。");
+    const char *msg;
+    if (game->current_location == 0)
+      msg = "村庄里没有敌人。";
+    else if (game->current_location == 4)
+      msg = "在王城里很安全，没有敌人。";
+    else
+      msg = "魔法学院里没有敌人。";
+    printf("%s\n", msg);
     return;
   }
 
