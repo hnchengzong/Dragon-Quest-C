@@ -12,7 +12,7 @@ target("Dragon-Quest-C")
     set_kind("binary")
     add_files("src/*.c")
     add_includedirs("src/include")
-    set_warnings("everything", "error")
+    set_warnings("allextra", "error")
     set_targetdir("build")
 
     if is_mode("debug") then

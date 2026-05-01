@@ -6,9 +6,10 @@
 #include <stdlib.h>
 #include <time.h>
 
-int main() {
+int main(void) {
   GameData game;
-  srand(time(NULL));
+  time_t placeholder = time(NULL);
+  srand(placeholder);
 
   printf("=====================================\n");
   printf("      勇者斗恶龙\n");

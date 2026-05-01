@@ -5,29 +5,26 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-static void exit_game(GameData *game) {
+static void exit_game() {
   printf("感谢游玩！再见！\n");
   exit(0);
 }
 
-static void easter_egg(GameData *game) {
-  printf("哼哼哼啊啊啊啊啊啊！！！！！！\n");
-}
+static void easter_egg() { printf("哼哼哼啊啊啊啊啊啊！！！！！！\n"); }
 
 void main_menu(GameData *game) {
-  static const MenuItem menu_items[] = {
-      {1, "查看状态", show_status},
-      {2, "移动", move},
-      {3, "寻找敌人", battle},
-      {4, "与NPC交谈", talk_to_npc},
-      {5, "查看背包", show_inventory},
-      {6, "使用物品", use_item},
-      {7, "休息", rest},
-      {8, "学习技能", learn_skills},
-      {9, "保存游戏", save_game},
-      {0, "退出游戏", exit_game},
-      {666, "作弊模式", cheat_game},
-      {114514, "彩蛋", easter_egg}};
+  static const MenuItem menu_items[] = {{1, "查看状态", show_status},
+                                        {2, "移动", move},
+                                        {3, "寻找敌人", battle},
+                                        {4, "与NPC交谈", talk_to_npc},
+                                        {5, "查看背包", show_inventory},
+                                        {6, "使用物品", use_item},
+                                        {7, "休息", rest},
+                                        {8, "学习技能", learn_skills},
+                                        {9, "保存游戏", save_game},
+                                        {0, "退出游戏", exit_game},
+                                        {666, "作弊模式", cheat_game},
+                                        {114514, "彩蛋", easter_egg}};
   const int menu_count = sizeof(menu_items) / sizeof(menu_items[0]);
   int choice;
 

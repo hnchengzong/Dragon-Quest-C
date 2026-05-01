@@ -41,7 +41,7 @@ int estimate_enemy_level(Enemy *enemy) {
   return level < 1 ? 1 : level;
 }
 
-void show_ending(GameData *game) {
+void show_ending() {
   printf("\n=====================================\n");
   printf("                结局\n");
   printf("=====================================\n");
@@ -97,7 +97,7 @@ static void handle_enemy_defeat(GameData *game, Enemy *enemy, int is_dragon) {
 
   if (is_dragon && !game->dragon_defeated) {
     game->dragon_defeated = 1;
-    show_ending(game);
+    show_ending();
   }
 
   if (game->player.exp >= game->player.level * 100)
@@ -117,10 +117,14 @@ static void player_use_skill(GameData *game, Enemy *enemy, int is_dragon) {
   printf("\n可用技能:\n");
   int count = 0;
   int skills[MAX_SKILLS];
+  int choice;
+  Skill *skill;
+  int int_bonus;
+  int damage;
 
   for (int i = 0; i < game->learned_skill_count; i++) {
     int idx = game->learned_skills[i];
-    Skill *skill = &game->skills[idx];
+    skill = &game->skills[idx];
 
     if (game->player.level < skill->required_level)
       continue;
@@ -140,7 +144,6 @@ static void player_use_skill(GameData *game, Enemy *enemy, int is_dragon) {
   }
 
   printf("请选择技能 (0返回): ");
-  int choice;
   scanf("%d", &choice);
 
   if (choice == 0)
@@ -152,7 +155,7 @@ static void player_use_skill(GameData *game, Enemy *enemy, int is_dragon) {
     return;
   }
 
-  Skill *skill = &game->skills[skills[choice]];
+  skill = &game->skills[skills[choice]];
 
   if (game->player.mp < skill->mp_cost) {
     printf("MP不足，无法使用此技能！\n");
@@ -161,8 +164,8 @@ static void player_use_skill(GameData *game, Enemy *enemy, int is_dragon) {
 
   game->player.mp -= skill->mp_cost;
 
-  int int_bonus = game->player.intelligence / 2;
-  int damage = skill->damage + game->player.attack + int_bonus;
+  int_bonus = game->player.intelligence / 2;
+  damage = skill->damage + game->player.attack + int_bonus;
 
   enemy->hp -= damage;
   printf("你使用%s对%s造成了%d点伤害！(技能伤害%d + 攻击力%ld + 智力加成%d)\n",
