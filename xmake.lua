@@ -16,14 +16,14 @@ target("Dragon-Quest-C")
     set_targetdir("build")
 
     if is_mode("debug") then
-        set_targetdir("build/debug")
+        set_targetdir("build/$(mode)")
         set_symbols("debug")
         set_optimize("none")
         add_defines("DEBUG")
     end
 
     if is_mode("release") then
-        set_targetdir("build/release")
+        set_targetdir("build/$(mode)")
         set_symbols("hidden")
         set_optimize("fastest")
         set_strip("all")
